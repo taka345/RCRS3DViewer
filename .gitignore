@@ -1,1 +1,7 @@
 /bin/
+/.settings/
+/test-results/
+/.classpath
+/.project
+/hs_err_pid3480.log
+/hs_err_pid9376.log
