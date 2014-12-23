@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="Test/HelloProcessing.java" kind="src" path="src"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"/>
+	<classpathentry exported="true" kind="lib" path="/home/robocup/lib"/>
+	<classpathentry exported="true" kind="lib" path="/home/robocup/lib/clear.jar"/>
+	<classpathentry exported="true" kind="lib" path="/home/robocup/lib/collapse.jar"/>
+	<classpathentry exported="true" kind="lib" path="/home/robocup/lib/commons-logging-1.1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="/home/robocup/lib/core.jar"/>
+	<classpathentry exported="true" kind="lib" path="/home/robocup/lib/dom4j.jar"/>
+	<classpathentry exported="true" kind="lib" path="/home/robocup/lib/gis2.jar"/>
+	<classpathentry exported="true" kind="lib" path="/home/robocup/lib/gluegen-rt.jar"/>
+	<classpathentry exported="true" kind="lib" path="/home/robocup/lib/gluegen-rt-natives-linux-amd64.jar"/>
+	<classpathentry exported="true" kind="lib" path="/home/robocup/lib/handy.jar"/>
+	<classpathentry exported="true" kind="lib" path="/home/robocup/lib/human.jar"/>
+	<classpathentry exported="true" kind="lib" path="/home/robocup/lib/ignition.jar"/>
+	<classpathentry exported="true" kind="lib" path="/home/robocup/lib/jaxen-1.1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="/home/robocup/lib/jcommon-1.0.16.jar"/>
+	<classpathentry exported="true" kind="lib" path="/home/robocup/lib/jfreechart-1.0.13.jar"/>
+	<classpathentry exported="true" kind="lib" path="/home/robocup/lib/jogl-all.jar"/>
+	<classpathentry exported="true" kind="lib" path="/home/robocup/lib/jogl-all-natives-linux-amd64.jar"/>
+	<classpathentry exported="true" kind="lib" path="/home/robocup/lib/jscience-4.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="/home/robocup/lib/jsi-1.0b2p1.jar"/>
+	<classpathentry exported="true" kind="lib" path="/home/robocup/lib/jts-1.11.jar"/>
+	<classpathentry exported="true" kind="lib" path="/home/robocup/lib/junit-4.5.jar"/>
+	<classpathentry exported="true" kind="lib" path="/home/robocup/lib/kernel.jar"/>
+	<classpathentry exported="true" kind="lib" path="/home/robocup/lib/log4j-1.2.15.jar"/>
+	<classpathentry exported="true" kind="lib" path="/home/robocup/lib/maps.jar"/>
+	<classpathentry exported="true" kind="lib" path="/home/robocup/lib/misc.jar"/>
+	<classpathentry exported="true" kind="lib" path="/home/robocup/lib/rescuecore.jar"/>
+	<classpathentry exported="true" kind="lib" path="/home/robocup/lib/rescuecore2.jar"/>
+	<classpathentry exported="true" kind="lib" path="/home/robocup/lib/resq-fire.jar"/>
+	<classpathentry exported="true" kind="lib" path="/home/robocup/lib/sample.jar"/>
+	<classpathentry exported="true" kind="lib" path="/home/robocup/lib/standard.jar"/>
+	<classpathentry exported="true" kind="lib" path="/home/robocup/lib/traffic3.jar"/>
+	<classpathentry exported="true" kind="lib" path="/home/robocup/lib/trove-0.1.8.jar"/>
+	<classpathentry exported="true" kind="lib" path="/home/robocup/lib/uncommons-maths-1.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="/home/robocup/lib/xml-0.0.6.jar"/>
+	<classpathentry kind="lib" path="/home/robocup/lib/OBJLoader.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
