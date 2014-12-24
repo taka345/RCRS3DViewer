@@ -26,12 +26,5 @@ public class RCRSViewerMain {
 		frame.setMenuBar(menu.getMenu());
 		frame.setResizable(true);
 		frame.setVisible(true);
-
-		JFrame frame2 = new JFrame("Test");
-		frame2.setSize(rcrs.width, rcrs.height);
-		frame2.setMenuBar(menu.getMenu());
-		frame2.setResizable(true);
-		frame2.setVisible(true);
 	}
-
 }
