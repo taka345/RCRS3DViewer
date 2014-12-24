@@ -1,4 +1,4 @@
-package graph;
+package information.graph;
 
 import java.awt.Color;
 

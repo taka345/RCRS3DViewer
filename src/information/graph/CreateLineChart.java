@@ -1,4 +1,4 @@
-package graph;
+package information.graph;
 
 import processing.core.PApplet;
 
@@ -104,6 +104,12 @@ public class CreateLineChart {
 	  public void setLabelName(String xLabel, String yLabel) {
 	    this.xName = xLabel;
 	    this.yName = yLabel;
+	  }
+	  
+	  public void draw(int w, int h) {//グラフの描画
+		  setShowDisplayData(this.xScale);
+		  this.drawScene(w ,h);
+		  this.drawDataLine(w ,h);
 	  }
 	  
 	  public void draw(double[] data,int time, int w, int h) {//グラフの描画

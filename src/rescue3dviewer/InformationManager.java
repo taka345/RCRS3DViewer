@@ -1,7 +1,9 @@
 package rescue3dviewer;
 
-import graph.CreateLineChart;
-import graph.createChartImage;
+import information.DrawLineChart;
+import information.graph.CreateLineChart;
+import information.graph.createChartImage;
+import information.frame.InfomationFrame;
 
 import org.jfree.data.general.DefaultPieDataset;
 
@@ -12,70 +14,89 @@ class InformationManager extends PApplet {
 	
 	public static final int NO_CHANGE = -1;
 
-	  public static final int BUILDING_HEATING = 0; 
-	  public static final int BUILDING_BURNING = 1; 
-	  public static final int BUILDING_INFERNO = 2;
-	  public static final int BUILDING_EXTINGUISH = 3;
-	  public static final int BUILDING_BURNT_OUT = 4;
+	public static final int BUILDING_HEATING = 0; 
+	public static final int BUILDING_BURNING = 1; 
+	public static final int BUILDING_INFERNO = 2;
+	public static final int BUILDING_EXTINGUISH = 3;
+	public static final int BUILDING_BURNT_OUT = 4;
+	public static final int HUMAN_DEAD = 5;
 
-	  public static final int HUMAN_DEAD = 5;
+	private double[] score;
+	private double[] population;
+	private double[] numBurnedBuilding;
+	  
+	private int livePopulation = 0;
+	private int deadPopulation = 0;
+	  
+	private int heatingBuilding = 0;
+	private int burntoutBuilding = 0;
+	private int unBurntBuilding = 0;
+	  
+	private int allPopulation = 0;
+	private int refugePopulation = 0;
+	private int evacuationPopulation = 0;
 
-	  private double[] score;
-	  private double[] population;
-	  private double[] numBurnedBuilding;
+	private int currentTime;
+	private int maxTime;
+	private int startTime;
 	  
-	  private int livePopulation = 0;
-	  private int deadPopulation = 0;
-	  
-	  private int heatingBuilding = 0;
-	  private int burntoutBuilding = 0;
-	  private int unBurntBuilding = 0;
-	  
-	  private int allPopulation = 0;
-	  private int refugePopulation = 0;
-	  private int evacuationPopulation = 0;
+	private double maxScore = 0;
 
-	  private int currentTime;
-	  private int maxTime;
-	  private int startTime;
+	private InfomationFrame infoFrame;
+	private DrawLineChart scoreChart;
+	private DrawLineChart populationChart;
+	private DrawLineChart burnedBuildingChart;
 	  
-	  private double maxScore = 0;
-
-	  CreateLineChart gc = new CreateLineChart(this);//グラフの作成
-	  
-	  DefaultPieDataset populationData;
-	  DefaultPieDataset buildingData;
-	  DefaultPieDataset refugeData;
+	DefaultPieDataset populationData;
+	DefaultPieDataset buildingData;
+	DefaultPieDataset refugeData;
 	    
-	  PImage chartImage;
-	  
+	PImage chartImage;
 
-	  private Button button;
-
-	  public InformationManager()
-	  {
-	    button = new Button(0, 0, 225, 30, true);
+	public InformationManager()
+	{
 	    populationData = new DefaultPieDataset();      
 	    buildingData = new DefaultPieDataset();      
 	    refugeData = new DefaultPieDataset();
-	  }
+	    
+	    this.scoreChart = new DrawLineChart(this, 400, 200);
+	    this.scoreChart.setLocation(0, 40);
+	    this.scoreChart.setLabelName("Time", "Score");
+	    this.scoreChart.setTittle("Score");
+	    
+	    this.populationChart = new DrawLineChart(this, 400, 200);
+	    this.populationChart.setLocation(0, 270);
+	    this.populationChart.setLabelName("Time", "populastion");
+	    this.populationChart.setTittle("Population");
+	    
+	    this.burnedBuildingChart = new DrawLineChart(this, 400, 200);
+	    this.burnedBuildingChart.setLocation(0, 500);
+	    this.burnedBuildingChart.setLabelName("Time", "Burned Building");
+	    this.burnedBuildingChart.setTittle("Burned Building");
+	    
+	    this.infoFrame = new InfomationFrame(0, 0, 225, 30, true);
+	    this.infoFrame.setValue("Line", this.scoreChart);
+	    this.infoFrame.setValue("Line", this.populationChart);
+	    this.infoFrame.setValue("Line", this.burnedBuildingChart);
+	}
 
-	  public void draw() {
-	    /*
-	    textSize(50);
-	     fill(255,120,0);
-	     text(width,50,50);
-	    */
+	public void draw() {
 	    background(128);
-	    pushStyle();
-	    textAlign(CENTER, TOP);
-	    textSize(10);
-	    button.draw(this);
-	    popStyle();
-
-	    pushStyle();
+	    
+	    this.scoreChart.setVMax(score);
+	    this.scoreChart.setData(score, currentTime);
+	    
+	    this.populationChart.setVMax(population);
+	    this.populationChart.setData(population, currentTime);
+	    
+	    this.burnedBuildingChart.setVMax(numBurnedBuilding);
+	    this.burnedBuildingChart.setData(numBurnedBuilding, currentTime);
+	    
+	    this.infoFrame.draw(this);
+	    
 	    //score darw Graph
 
+	    /*
 	    switch(button.getFlag()) {
 	    case 0 :
 	      translate(0,40);
@@ -117,15 +138,16 @@ class InformationManager extends PApplet {
 	      break;
 	    }
 	    popStyle();
-	  }
+	    */
+	}
 
-	  public void mousePressed() {
-	    button.push();
-	  }
+	public void mousePressed() {
+		infoFrame.push(this.mouseX, this.mouseY);
+	}
 
-	  public void init(int maxTime, int startTime, int population)
-	  {
-	    this.currentTime = 0;
+	public void init(int maxTime, int startTime, int population)
+	{
+		this.currentTime = 0;
 	    this.maxTime = maxTime;
 	    this.startTime = startTime;
 
@@ -148,130 +170,55 @@ class InformationManager extends PApplet {
 	    this.refugePopulation = 0;
 
 	    for (int i = 1; i < maxTime-startTime; ++i) {
-	      this.score[i] = -1;
-	      this.population[i] = -1;
-	      this.numBurnedBuilding[i] = -1;
+	    	this.score[i] = -1;
+	    	this.population[i] = -1;
+	    	this.numBurnedBuilding[i] = -1;
 	    }
-	  }
+	}
 	  
-	  public void setBurnedBuilding(int time, int fire_count)
-	  {
-	    this.numBurnedBuilding[time] = fire_count;
-	  }
+	public void setBurnedBuilding(int time, int fire_count)
+	{
+		this.numBurnedBuilding[time] = fire_count;
+	}
 	  
-	  public void setPopulation(int time, int livePopulation)
-	  {
+	public void setPopulation(int time, int livePopulation)
+	{
 	    this.population[time] = livePopulation;
-	  }
+	}
 	  
-	  public void setPopulationData(int live, int dead)
-	  {
+	public void setPopulationData(int live, int dead)
+	{
 	    this.livePopulation = live;
 	    this.deadPopulation = dead;
-	  }
+	}
 	  
-	  public void setBuildingData(int heating, int burnt_out, int unburnt)
-	  {
+	public void setBuildingData(int heating, int burnt_out, int unburnt)
+	{
 	    this.heatingBuilding = heating;
 	    this.burntoutBuilding = burnt_out;
 	    this.unBurntBuilding = unburnt;
-	  }
+	}
 	  
-	  public void setRefugeData(int refugepopulation)
-	  {
+	public void setRefugeData(int refugepopulation)
+	{
 	    this.refugePopulation = refugepopulation;
-	  }
+	}
 
-	  public void nextTime(int t)
-	  {
+	public void nextTime(int t)
+	{
 	    int time = t - this.startTime;
 	    if (time <= 0 || time >= maxTime) return;
 	    
 	    this.currentTime = time;
 	    this.population[time] = this.population[time-1];
 	    this.numBurnedBuilding[time] = this.numBurnedBuilding[time-1];
-	  }
+	}
 
-	  public void setScore(int t, double score)
-	  {
+	public void setScore(int t, double score)
+	{
 	    int time = t-this.startTime;
 	    if (time <= 0 || time >= maxTime) return;
 
 	    this.score[time] = score;
-	  }
-
-	  public boolean checkMousePos(int x, int y, int width, int height)
-	  {
-	    if ((this.mouseX >= x && x+width >= this.mouseX) && (this.mouseY >= y && y+height >= this.mouseY)) return true;
-	    return false;
-	  }
-
-	  private class Button {
-	    private String label1;
-	    private String label2;//円グラフ用
-	    private int x;
-	    private int y;
-	    private int width;
-	    private int height;
-
-	    private boolean on1;
-	    private boolean on2;//円グラフ用
-
-	    public Button(int x, int y, int width, int height, boolean b) {
-	      this.label1 = "LineChart";
-	      this.label2 = "PieChart";
-	      this.x = x;
-	      this.y = y;
-	      this.width = width;
-	      this.height = height;
-
-	      this.on1 = b;
-	      this.on2 = false;
-	    }
-
-	    public void draw(PApplet p) {
-	      int tempH = this.width/3;
-	      p.pushStyle();
-	      p.stroke(100);
-	      p.strokeWeight(5);
-	      
-	      if (on1)p.fill(180); 
-	      else p.fill(20);
-	      p.rect(x, y, tempH, this.height);
-	      
-	      if (on1)p.fill(50); 
-	      else p.fill(200);
-	      p.text(label1, x+tempH/2, y);
-	      
-	      if (on2)p.fill(180); 
-	      else p.fill(20);
-	      p.rect(tempH, y, tempH, this.height);
-	      
-	      if (on2)p.fill(50); 
-	      else p.fill(200);
-	      p.text(label2, tempH+tempH/2, y);
-	      
-	      p.popStyle();
-	    }
-
-	    public void push() {
-	      int tempH = this.width/3;
-	      if (checkMousePos(this.x, this.y, tempH, this.height) && !on1) {
-	        on1 = true; 
-	        on2 = false;
-	      }
-	      else if (checkMousePos(tempH, this.y, tempH, this.height) && !on2) {
-	        on1 = false;
-	        on2 = true;
-	      }
-	    }
-
-	    public int getFlag() {
-	      int result = 0;
-	      
-	      if (on2) result = 1;
-
-	      return result;
-	    }
-	  }
 	}
+}
