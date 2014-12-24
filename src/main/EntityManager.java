@@ -372,6 +372,8 @@ public abstract class EntityManager extends Thread {
 				case REFUGE:
 					refugeIDList.add(area.getID());
 					break;
+				default:
+					break;
 				}
 			}
 			// if(shapes[count] instanceof BuildingShape) println(1);
@@ -397,24 +399,6 @@ public abstract class EntityManager extends Thread {
 			}
 		}
 		return false;
-	}
-
-	private void neighboursBuilding(EntityID beforeID, EntityID id,
-			float bHeight) {
-		for (EntityID neighboursID : ((rescuecore2.standard.entities.Area) world
-				.getEntity(id)).getNeighbours()) {
-			if (!beforeID.equals(neighboursID)) {
-				if (!"urn:rescuecore2.standard:entity:road".equals(world
-						.getEntity(neighboursID).getURN())) {
-					if (bHeightListMap.containsKey(neighboursID)) {
-						bHeight = bHeightListMap.get(neighboursID);
-					} else {
-						bHeightListMap.put(neighboursID, bHeight);
-						neighboursBuilding(id, neighboursID, bHeight);
-					}
-				}
-			}
-		}
 	}
 
 	public void play() {

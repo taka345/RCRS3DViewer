@@ -2,7 +2,6 @@ package render.area;
 
 import processing.core.PApplet;
 
-import java.applet.Applet;
 import java.awt.geom.Rectangle2D;
 
 import loader.OBJLoader;
@@ -10,10 +9,8 @@ import main.InformationManager;
 import main.ViewerConfig;
 import render.agent.EntityShape;
 import render.area.render.BlockadeRender;
-import render.effect.AreaEffect;
 import rescuecore2.misc.gui.ScreenTransform;
 import rescuecore2.worldmodel.Entity;
-import rescuecore2.worldmodel.EntityID;
 import rescuecore2.standard.entities.Blockade;
 
 public class BlockadeShape implements EntityShape {
