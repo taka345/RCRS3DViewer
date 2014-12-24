@@ -23,6 +23,7 @@ public class InformationManager extends PApplet {
 	private double[] score;
 	private double[] population;
 	private double[] numBurnedBuilding;
+	private double[] blockadeCounts;
 	  
 	private int livePopulation = 0;
 	private int deadPopulation = 0;
@@ -145,18 +146,20 @@ public class InformationManager extends PApplet {
 	}
 
 	public void init(int maxTime, int startTime, int population)
-	{
-		this.currentTime = 0;
+	  {
+	    this.currentTime = 0;
 	    this.maxTime = maxTime;
 	    this.startTime = startTime;
 
 	    this.score = new double[maxTime-startTime];
 	    this.population = new double[maxTime-startTime];
 	    this.numBurnedBuilding = new double[maxTime-startTime];
+	    this.blockadeCounts = new double[maxTime-startTime];
 
 	    this.score[0] = 0;
 	    this.population[0] = population;
 	    this.numBurnedBuilding[0] = 0;
+	    this.blockadeCounts[0] = 0;
 	    
 	    this.livePopulation = 0;
 	    this.deadPopulation = 0;
@@ -164,60 +167,69 @@ public class InformationManager extends PApplet {
 	    this.heatingBuilding = 0;
 	    this.burntoutBuilding = 0;
 	    this.unBurntBuilding = 0;
+
 	    
 	    this.allPopulation = population;
 	    this.refugePopulation = 0;
 
 	    for (int i = 1; i < maxTime-startTime; ++i) {
-	    	this.score[i] = -1;
-	    	this.population[i] = -1;
-	    	this.numBurnedBuilding[i] = -1;
+	      this.score[i] = -1;
+	      this.population[i] = -1;
+	      this.numBurnedBuilding[i] = -1;
+	      this.blockadeCounts[i] = -1;
 	    }
-	}
+	  }
 	  
-	public void setBurnedBuilding(int time, int fire_count)
-	{
-		this.numBurnedBuilding[time] = fire_count;
-	}
+	  public void setBurnedBuilding(int time, int fire_count)
+	  {
+	    this.numBurnedBuilding[time] = fire_count;
+	  }
 	  
-	public void setPopulation(int time, int livePopulation)
-	{
+	  public void setPopulation(int time, int livePopulation)
+	  {
 	    this.population[time] = livePopulation;
-	}
+	  }
 	  
-	public void setPopulationData(int live, int dead)
-	{
+	  public void setBlockadeCount(int time, int blockadeCount)
+	  {
+	    this.blockadeCounts[time] = blockadeCount;
+	  }
+	  
+	  public void setPopulationData(int live, int dead)
+	  {
 	    this.livePopulation = live;
 	    this.deadPopulation = dead;
-	}
+	  }
 	  
-	public void setBuildingData(int heating, int burnt_out, int unburnt)
-	{
+	  public void setBuildingData(int heating, int burnt_out, int unburnt)
+	  {
 	    this.heatingBuilding = heating;
 	    this.burntoutBuilding = burnt_out;
 	    this.unBurntBuilding = unburnt;
-	}
+	  }
 	  
-	public void setRefugeData(int refugepopulation)
-	{
+	  public void setRefugeData(int refugepopulation)
+	  {
 	    this.refugePopulation = refugepopulation;
-	}
+	  }
+	  
 
-	public void nextTime(int t)
-	{
+	  public void nextTime(int t)
+	  {
 	    int time = t - this.startTime;
 	    if (time <= 0 || time >= maxTime) return;
 	    
 	    this.currentTime = time;
 	    this.population[time] = this.population[time-1];
 	    this.numBurnedBuilding[time] = this.numBurnedBuilding[time-1];
-	}
+	    this.blockadeCounts[time] = this.blockadeCounts[time-1];
+	  }
 
-	public void setScore(int t, double score)
-	{
+	  public void setScore(int t, double score)
+	  {
 	    int time = t-this.startTime;
 	    if (time <= 0 || time >= maxTime) return;
 
 	    this.score[time] = score;
-	}
+	  }
 }

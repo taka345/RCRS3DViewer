@@ -1,20 +1,19 @@
 package main;
 
+
 import java.lang.Thread;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.ConcurrentModificationException;
 import java.util.Map;
 import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
-import java.awt.Frame;
+
 
 import loader.ImageLoader;
 import loader.OBJLoader;
 import processing.core.PApplet;
-import processing.core.PImage;
 import render.agent.AmbulanceTeamShape;
 import render.agent.CivilianShape;
 import render.agent.EntityShape;
@@ -37,7 +36,6 @@ import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.Road;
 import rescuecore2.standard.entities.Building;
-import rescuecore2.standard.entities.Human;
 import rescuecore2.standard.entities.FireBrigade;
 import rescuecore2.standard.entities.PoliceForce;
 import rescuecore2.standard.entities.AmbulanceTeam;
@@ -47,39 +45,35 @@ import rescuecore2.standard.score.LegacyScoreFunction;
 import rescuecore2.score.ScoreFunction;
 import rescuecore2.messages.Command;
 import rescuecore2.standard.messages.AKExtinguish;
-import rescuecore2.standard.messages.AKRescue;
-import rescuecore2.standard.messages.AKClearArea;
 import rescuecore2.standard.messages.AKClear;
 import rescuecore2.standard.messages.AKLoad;
 import rescuecore2.standard.messages.AKUnload;
 import rescuecore2.standard.messages.AKSpeak;
-import rescuecore2.standard.messages.AKSay;
 import rescuecore2.log.FileLogReader;
-import saito.objloader.*;
 
 public abstract class EntityManager extends Thread
 {
-	protected EntityShape[] shapes; //繝薙Ν繧?繧ｨ繝ｼ繧ｸ繧ｧ繝ｳ繝医↑縺ｩ縺ｮ謠冗判逕ｨ繧ｯ繝ｩ繧ｹ縺後％縺薙↓譬ｼ邏阪＆繧後※縺?繧?
+  protected EntityShape[] shapes; //ビルやエージェントなどの描画用クラスがここに格納されている
   protected List<EntityShape> shapeList; //temporary list for shapes
   protected HashMap<Integer, Integer> indexIDMap;
   
   protected Map<EntityID,List<EntityID>> cBlockadeList;
 
-  protected StandardWorldModel world; //繝ｯ繝ｼ繝ｫ繝峨Δ繝?繝ｫ繝薙Ν繧?驕薙↑縺ｩ縺ｮ諠?蝣ｱ縺檎ｮ｡逅?縺輔ｌ縺ｦ縺?繧?
+  protected StandardWorldModel world; //ワールドモデルビルや道などの情報が管理されている
   protected StandardWorldModel startWorld;
-  protected ChangeSet[] changes; //繝ｯ繝ｼ繝ｫ繝峨Δ繝?繝ｫ縺ｮ譖ｴ譁ｰ諠?蝣ｱ縺檎ｮ｡逅?縺輔ｌ縺ｦ縺?繧?
-  protected ScreenTransform transform; //繧ｷ繝溘Η繝ｬ繝ｼ繧ｷ繝ｧ繝ｳ蠎ｧ讓吶ｒ螳溷ｺｧ讓吶↓螟画鋤縺吶ｋ繧ｯ繝ｩ繧ｹ
+  protected ChangeSet[] changes; //ワールドモデルの更新情報が管理されている
+  protected ScreenTransform transform; //シミュレーション座標を実座標に変換するクラス
   protected Command[][] commands; //[time][id]
 
-  protected int scale; // 繧ｪ繝悶ず繧ｧ繧ｯ繝医?ｮ繧ｹ繧ｱ繝ｼ繝ｫ縲?蛟､縺悟､ｧ縺阪＞縺ｨ謠冗判縺檎ｴｰ縺九￥縺ｪ繧?
-  protected int startTime; //繧ｷ繝溘Η繝ｬ繝ｼ繧ｷ繝ｧ繝ｳ髢句ｧ区凾髢?
-  protected int endTime; //繧ｷ繝溘Η繝ｬ繝ｼ繧ｷ繝ｧ繝ｳ邨ゆｺ?譎る俣 髢句ｧ区凾髢薙→邨ゆｺ?譎る俣縺ｯ螳溯｡御ｸｭ縺ｮ繧ｷ繝溘Η繝ｬ繝ｼ繧ｷ繝ｧ繝ｳ縺ｫ謗･邯壹＠縺溷?ｴ蜷医ｒ諠ｳ螳壹＠縺ｦ縺?繧?
-  protected int time; //迴ｾ蝨ｨ縺ｮ譎ょ綾
+  protected int scale; // オブジェクトのスケール　値が大きいと描画が細かくなる
+  protected int startTime; //シミュレーション開始時間
+  protected int endTime; //シミュレーション終了時間 開始時間と終了時間は実行中のシミュレーションに接続した場合を想定している
+  protected int time; //現在の時刻
   protected double score;
   protected double maxScore;
 
-  protected boolean initialized; //蛻晄悄蛹悶′螳御ｺ?縺励◆縺?
-  protected boolean updated; //谺｡縺ｮ繧ｹ繝?繝?繝励∈騾ｲ繧薙□縺?
+  protected boolean initialized; //初期化が完了したか
+  protected boolean updated; //次のステップへ進んだか
   protected boolean simulationEnded;
   private boolean loop;
 
@@ -104,6 +98,7 @@ public abstract class EntityManager extends Thread
   private int livePopulation = 0,deadPopulation = 0;
   private int heatingBuilding = 0, burntoutBuilding = 0, extinguishBuilding = 0;
   private int refugepopulation = 0;
+  private int blockadeCount = 0;
   
   protected ArrayList<EntityShape> blockadeShapeList;
 
@@ -149,14 +144,14 @@ public abstract class EntityManager extends Thread
     this.blockadeShapeList = null;
   }
 
-  public void run() //繧ｷ繝溘Η繝ｬ繝ｼ繧ｷ繝ｧ繝ｳ諠?蝣ｱ縺ｮ譖ｴ譁ｰ
+  public void run() //シミュレーション情報の更新
   {
     
     try {
-      while (world == null || transform == null) Thread.sleep(1); //諠?蝣ｱ隱ｭ縺ｿ霎ｼ縺ｿ蠕?縺｡
+      while (world == null || transform == null) Thread.sleep(1); //情報読み込み待ち
 
-      this.initialize(); //蛻晄悄蛹?
-      while (!initialized) Thread.sleep(1); //蛻晄悄蛹門ｾ?縺｡
+      this.initialize(); //初期化
+      while (!initialized) Thread.sleep(1); //初期化待ち
 
       while (true) {
         Thread.sleep(1);
@@ -172,13 +167,12 @@ public abstract class EntityManager extends Thread
                   if (commands[time][i] instanceof AKClear) {
                     AKClear message = (AKClear)commands[time][i];
                     Blockade b = (Blockade)world.getEntity(message.getTarget());
-                    if (shapes[index] instanceof PoliceForceShape) {
+                    if (shapes[index] instanceof HumanShape) {
                       try{
-                        ((PoliceForceShape)shapes[index]).setActionTarget(transform.xToScreen(b.getX()), transform.yToScreen(b.getY()));
+                        ((HumanShape)shapes[index]).setActionTarget(transform.xToScreen(b.getX()), transform.yToScreen(b.getY()));;
                       }
                       catch(Exception e)//(NullPointerException e)
                       {
-                    	  applet.println("call");
                         //e.printStackTrace();
                       }
                     }
@@ -199,13 +193,19 @@ public abstract class EntityManager extends Thread
                   }
                   else {
                     shapeList.get(index-shapes.length).update(world.getEntity(id), transform);
+                    EntityShape eShape = shapeList.get(index-shapes.length);
+                    if(eShape instanceof BlockadeShape){
+                      blockadeCount += ((BlockadeShape) eShape).getRepairCost();
+                    }
                   }
                 }
                 else {
                   //---------blockade-----------//
                   BlockadeShape bs = new BlockadeShape(world.getEntity(id), transform, this.scale, this.blockades);
                   indexIDMap.put(id.getValue(), shapes.length+shapeList.size());
+                  blockadeCount += bs.getRepairCost();
                   shapeList.add(bs);
+                  
                 }
                 if(managerlog == null && loop == false){
                   if((cBlockadeList.get(id)) != null){
@@ -270,6 +270,7 @@ public abstract class EntityManager extends Thread
                   EntityID civ = h.getPosition();
                   if(isRefuge(civ) == true){
                     refugepopulation++;
+                    ((HumanShape)shapes[index.intValue()]).setRefuge();
                   }
                 }
               }
@@ -278,6 +279,7 @@ public abstract class EntityManager extends Thread
               this.information.setPopulationData(livePopulation, deadPopulation);
               this.information.setBuildingData(heatingBuilding, burntoutBuilding, extinguishBuilding);
               this.information.setRefugeData(refugepopulation);
+              this.information.setBlockadeCount(time - startTime,blockadeCount);
               if (commands[time] != null) {
                 for (int i = 0; i < commands[time].length; ++i) {
                   Integer index = indexIDMap.get(commands[time][i].getAgentID().getValue());
@@ -286,37 +288,38 @@ public abstract class EntityManager extends Thread
                       AKExtinguish message = (AKExtinguish)commands[time][i];
                       StandardEntity se = world.getEntity(message.getTarget());
                       Area a = (Area)se;
-                      if (shapes[index] instanceof FireBrigadeShape) {
-                        ((FireBrigadeShape)shapes[index]).setActionTarget(transform.xToScreen(a.getX()), transform.yToScreen(a.getY()),bHeightListMap.get(a.getID()));
+                      if (shapes[index] instanceof HumanShape) {
+                        ((HumanShape)shapes[index]).setActionTarget(transform.xToScreen(a.getX()), transform.yToScreen(a.getY()),bHeightListMap.get(a.getID()));
                       }
                     }
                     else if (commands[time][i] instanceof AKClear) {
-
-                      if (shapes[index] instanceof PoliceForceShape) {
+                      if (shapes[index] instanceof HumanShape) {
                         try{
-                          ((PoliceForceShape)shapes[index]).setClearAction();
+                          ((HumanShape)shapes[index]).setClearAction();
                         }
-                        catch(Exception e)
+                        catch(Exception e)//(NullPointerException e)
                         {
-                        	applet.println("call");
+                          PApplet.println("call");
+                          //e.printStackTrace();
                         }
                       }
                     }
                     else if (commands[time][i] instanceof AKLoad) {
-                      if (shapes[index] instanceof AmbulanceTeamShape) {
+                      if (shapes[index] instanceof HumanShape) {
                         ((AmbulanceTeamShape)shapes[index]).setCarry();
                       }
                     }
                     else if (commands[time][i] instanceof AKUnload) {
-                      if (shapes[index] instanceof AmbulanceTeamShape) {
+                      if (shapes[index] instanceof HumanShape) {
                         ((AmbulanceTeamShape)shapes[index]).setnoCarry();
                       }
                     }
                     else if (commands[time][i] instanceof AKSpeak) {
                       AKSpeak message = (AKSpeak)commands[time][i];
                       String m = new String(message.getContent());
-                      if (shapes[index] instanceof CivilianShape) {
-                        ((CivilianShape)shapes[index]).setSay(m);
+                      if (shapes[index] instanceof HumanShape) {
+                        HumanShape hs = (HumanShape)shapes[index];
+                        hs.setSay(m);
                       }
                     }
                   }
@@ -324,12 +327,12 @@ public abstract class EntityManager extends Thread
               }
             }
             catch(NullPointerException npe) {
-              //npe.printStackTrace();
+              npe.printStackTrace();
               //time = startTime;
             }
           }
           else {
-            time--; //繧ｵ繝ｼ繝舌°繧峨∪縺?諠?蝣ｱ縺碁?∽ｿ｡縺輔ｌ縺ｦ縺?縺ｪ縺?蝣ｴ蜷医せ繝?繝?繝励ｒ騾ｲ繧√↑縺?
+            time--; //サーバからまだ情報が送信されていない場合ステップを進めない
           }
           this.updated = false;
           this.onMarkSet = true;
@@ -342,7 +345,7 @@ public abstract class EntityManager extends Thread
     }
   }
 
-  protected void initialize() //陦ｨ遉ｺ逕ｨ繧ｯ繝ｩ繧ｹ縺ｮ貅門ｙ
+  protected void initialize() //表示用クラスの準備
   {
     if (world == null || transform == null || initialized) return;
 
@@ -356,7 +359,7 @@ public abstract class EntityManager extends Thread
     blockadeShapeList = new ArrayList<EntityShape>(size);
 
     Rectangle2D wb = world.getBounds();
-    double worldSize = wb.getWidth() * wb.getHeight(); //繝薙Ν縺ｮ鬮倥＆險育ｮ礼畑
+    double worldSize = wb.getWidth() * wb.getHeight(); //ビルの高さ計算用
     bHeightListMap.clear();
     
     if(image == null){
@@ -418,10 +421,10 @@ public abstract class EntityManager extends Thread
         shapes[count] = new FireBrigadeShape(entity, transform, scale, image.getFirebrigadeImage());
       }
       else if (entity instanceof PoliceForce) {
-        shapes[count] = new PoliceForceShape(entity, transform, scale, image.getPoliceImage());
+        shapes[count] = new PoliceForceShape(entity, transform, scale, image.getPoliceActionImage(), image.getPoliceImage());
       }
       else if (entity instanceof AmbulanceTeam) {
-        shapes[count] = new AmbulanceTeamShape(entity, transform, scale, image.getAmbulanceImage());
+        shapes[count] = new AmbulanceTeamShape(entity, transform, scale, image.getActionAmbulanceImage(), image.getAmbulanceImage());
       }
       else if (entity instanceof Civilian) {
         shapes[count] = new CivilianShape(entity, transform, scale);
@@ -456,7 +459,13 @@ public abstract class EntityManager extends Thread
     int y = (int)transform.screenToY(sight.y);
     int sWidth = (int)transform.screenToX(sight.width);
     int sHeight = (int)transform.screenToY(sight.height);
-    Collection<StandardEntity> es = world.getObjectsInRectangle(x, y, sWidth, sHeight);
+    Collection<StandardEntity> es = null;
+    try{
+      es = world.getObjectsInRectangle(x, y, sWidth, sHeight);
+    }
+    catch(NullPointerException npe) {
+      //npe.printStackTrace();
+    }
     burnings.clear();
     blockadeShapeList.clear();
 
@@ -520,7 +529,7 @@ public abstract class EntityManager extends Thread
       this.onMarkSet = false;
       for(int i = 0;i < burnings.size();i++){
         Integer index = burnings.get(i);
-        ((BuildingShape)shapes[index]).drawEffect(applet,viewerConfig);
+        ((BuildingShape)shapes[index]).drawShape(applet,viewerConfig);
       }
       for(int i = 0; i < blockadeShapeList.size(); i++){
         EntityShape bShape = blockadeShapeList.get(i);
@@ -529,7 +538,7 @@ public abstract class EntityManager extends Thread
     }
   }
 
-  protected void createScreenTransform(StandardWorldModel world) //繧ｷ繝溘Η繝ｬ繝ｼ繧ｷ繝ｧ繝ｳ蠎ｧ讓吶ｒ謠冗判逕ｨ蠎ｧ讓吶↓螟画鋤縺吶ｋ繧ｯ繝ｩ繧ｹ縺ｮ菴懈??
+  protected void createScreenTransform(StandardWorldModel world) //シミュレーション座標を描画用座標に変換するクラスの作成
   {
     Rectangle2D b = world.getBounds();
     ScreenTransform t = new ScreenTransform(b.getMinX(), b.getMinY(), b.getMaxX(), b.getMaxY());
@@ -554,7 +563,7 @@ public abstract class EntityManager extends Thread
             this.time = startTime;
           }
           catch(Exception e){
-            applet.println("selected wrong logfile.");
+            PApplet.println("selected wrong logfile.");
             e.printStackTrace();
           }
         }else{
@@ -570,7 +579,7 @@ public abstract class EntityManager extends Thread
             this.time = startTime;
           }
           catch(Exception e){
-        	  applet.println("selected wrong logfile.");
+            PApplet.println("selected wrong logfile.");
             e.printStackTrace();
           }
         }
@@ -626,6 +635,7 @@ public abstract class EntityManager extends Thread
     livePopulation = 0;
     deadPopulation = 0;
     heatingBuilding = 0;
+    blockadeCount = 0;
 
     extinguishBuilding = 0;
     refugepopulation = 0;
@@ -642,7 +652,7 @@ public abstract class EntityManager extends Thread
   
   private void neighboursBuilding(EntityID beforeID, EntityID id, float bHeight)
   {
-    for(EntityID neighboursID : ((Area)world.getEntity(id)).getNeighbours()){
+    for(EntityID neighboursID : ((rescuecore2.standard.entities.Area)world.getEntity(id)).getNeighbours()){
       if(!beforeID.equals(neighboursID)) {
         if(!"urn:rescuecore2.standard:entity:road".equals(world.getEntity(neighboursID).getURN())){
           if(bHeightListMap.containsKey(neighboursID)){
