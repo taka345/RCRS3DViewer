@@ -11,20 +11,23 @@ public class DrawLineChart extends LocalApplet {
 
 	public DrawLineChart(PApplet app_parent, int width, int height) {
 		super(app_parent);
-		gc = new CreateLineChart(this);//ã‚°ãƒ©ãƒ•ã?®ä½œæ??
+		gc = new CreateLineChart(this);// ã‚°ãƒ©ãƒ•ã?®ä½œæ??
 		this.w = width;
 		this.h = height;
 	}
-	
+
 	public void setLabelName(String horizontal, String vertical) {
 		gc.setLabelName(horizontal, vertical);
 	}
+
 	public void setVMax(double[] data) {
 		gc.setVMax(data);
 	}
+
 	public void setTittle(String tit) {
 		gc.setTittle(tit);
 	}
+
 	public void setData(double data[], int time) {
 		gc.setData(data, time);
 	}

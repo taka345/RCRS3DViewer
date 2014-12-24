@@ -25,286 +25,289 @@ import processing.core.*;
 
 public class RCRSViewer extends PApplet {
 
-private static final int PRECISION = 3;
+	private static final int PRECISION = 3;
 
-private EntityManager manager;
+	private EntityManager manager;
 
-private int rate;
-private int scale; //Objects Detail max 4000
-private int updateRate; //Many seconds do you update
+	private int rate;
+	private int scale; // Objects Detail max 4000
+	private int updateRate; // Many seconds do you update
 
-private Panel information;
-private Label timeInfo;
-private Label scoreInfo;
+	private Panel information;
+	private Label timeInfo;
+	private Label scoreInfo;
 
-private CameraParameter camera;
+	private CameraParameter camera;
 
-private int count;
+	private int count;
 
-private Config config;
-private NumberFormat format;
+	private Config config;
+	private NumberFormat format;
 
-private ViewerConfig viewerConfig;
-private InformationManager infoManager;
+	private ViewerConfig viewerConfig;
+	private InformationManager infoManager;
 
-private boolean preference;
-protected Frame preferenceff,graphff;
-protected boolean preferenceFlag,graphFlag;
+	private boolean preference;
+	protected Frame preferenceff, graphff;
+	protected boolean preferenceFlag, graphFlag;
 
-public void setup()
-{
-  rate = 30;
-  scale = 4000;
-  updateRate = 1;
-  count = 0;
+	public void setup() {
+		rate = 30;
+		scale = 4000;
+		updateRate = 1;
+		count = 0;
 
-  preference = true;
+		preference = true;
 
-  camera = new CameraParameter(scale);
+		camera = new CameraParameter(scale);
 
-  viewerConfig = new ViewerConfig();
-  infoManager = new InformationManager();
+		viewerConfig = new ViewerConfig();
+		infoManager = new InformationManager();
 
-  frameRate(rate);
-  this.size(500, 500, P3D);
+		frameRate(rate);
+		this.size(500, 500, P3D);
 
-  try {
-    format = NumberFormat.getInstance();
-    format.setMaximumFractionDigits(PRECISION);
+		try {
+			format = NumberFormat.getInstance();
+			format.setMaximumFractionDigits(PRECISION);
 
-    String jarsDir = "";
-    String configDir = "";
-    String[] lines = loadStrings("viewer3d.cfg");
-    for (int i = 0; i < lines.length; ++i) {
-      String[] option = lines[i].split(" ");
+			String jarsDir = "";
+			String configDir = "";
+			String[] lines = loadStrings("viewer3d.cfg");
+			for (int i = 0; i < lines.length; ++i) {
+				String[] option = lines[i].split(" ");
 
-      if (option[0].compareTo("viewer.jarsdir") == 0) jarsDir = option[1];
-      else if (option[0].compareTo("viewer.configdir") == 0) configDir = option[1];
-    }
-    String[] args = {
-      "-c", configDir
-    };
-    this.config = new Config();
-    CommandLineOptions.processArgs(args, this.config);
-    LoadableTypeProcessor processor = new LoadableTypeProcessor(this.config);
-    processor.setDirectory(jarsDir);
-    processor.addFactoryRegisterCallbacks(Registry.SYSTEM_REGISTRY);
-    processor.process();
-  }
-  catch(Exception e) {
-    e.printStackTrace();
-  }
+				if (option[0].compareTo("viewer.jarsdir") == 0)
+					jarsDir = option[1];
+				else if (option[0].compareTo("viewer.configdir") == 0)
+					configDir = option[1];
+			}
+			String[] args = { "-c", configDir };
+			this.config = new Config();
+			CommandLineOptions.processArgs(args, this.config);
+			LoadableTypeProcessor processor = new LoadableTypeProcessor(
+					this.config);
+			processor.setDirectory(jarsDir);
+			processor.addFactoryRegisterCallbacks(Registry.SYSTEM_REGISTRY);
+			processor.process();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-  manager = null;
-  timeInfo = new Label("Time : not started", Label.CENTER);
-  scoreInfo = new Label("Score : ???", Label.CENTER);
-  information = new Panel();
-  information.setPreferredSize(new Dimension(500, 50));
-  information.setLayout(new GridLayout(1, 3));
-  information.add(new Label(""));
-  information.add(timeInfo);
-  information.add(scoreInfo);
-  this.add(information, BorderLayout.NORTH);
-  
-  preferenceff = new Frame();
-  graphff = new Frame();
-  
-  preferenceFlag = false;
-  graphFlag = false;
-}
+		manager = null;
+		timeInfo = new Label("Time : not started", Label.CENTER);
+		scoreInfo = new Label("Score : ???", Label.CENTER);
+		information = new Panel();
+		information.setPreferredSize(new Dimension(500, 50));
+		information.setLayout(new GridLayout(1, 3));
+		information.add(new Label(""));
+		information.add(timeInfo);
+		information.add(scoreInfo);
+		this.add(information, BorderLayout.NORTH);
 
-public void draw()
-{
-  background(200);
+		preferenceff = new Frame();
+		graphff = new Frame();
 
-  if(viewerConfig.getFlag("GridLine")){
-    beginShape(LINES);
-    for(int i = 0; i <= scale; i += 100){
-      if(i%200==0) stroke(155,100,155);
-      else stroke(100,155,155);
-      vertex(i,0,20); vertex(i,4000,20);
-    }
-    for(int i = 0; i <= scale; i += 100){
-      if(i%200==0) stroke(155,100,155);
-      else stroke(100,155,155);
-      vertex(0,i,20);
-      vertex(4000,i,20);
-    }
-    endShape();
-  }
+		preferenceFlag = false;
+		graphFlag = false;
+	}
 
-  if (mousePressed) {
-    float vx = map((float)mouseX-width/2, -1*width/2, width/2, -0.01f, 0.01f);
-    float vy = map((float)mouseY-height/2, -1*height/2, height/2, -0.01f, 0.01f);
-    camera.rotate(vx*viewerConfig.cameraV);
-    camera.angled(vy*viewerConfig.cameraV);
-  }
+	public void draw() {
+		background(200);
 
-  camera.camera(this);
-  
-//rotateZ((float)(Math.PI*2-camera.getRoll()));
+		if (viewerConfig.getFlag("GridLine")) {
+			beginShape(LINES);
+			for (int i = 0; i <= scale; i += 100) {
+				if (i % 200 == 0)
+					stroke(155, 100, 155);
+				else
+					stroke(100, 155, 155);
+				vertex(i, 0, 20);
+				vertex(i, 4000, 20);
+			}
+			for (int i = 0; i <= scale; i += 100) {
+				if (i % 200 == 0)
+					stroke(155, 100, 155);
+				else
+					stroke(100, 155, 155);
+				vertex(0, i, 20);
+				vertex(4000, i, 20);
+			}
+			endShape();
+		}
 
-  if (manager != null && manager.isInitialized())
-  {
-    ambientLight(255, 255, 255);
-    //directionalLight(255,255,255,0,0,-1);
-    try{
-      manager.drawShapes(count, rate*updateRate, viewerConfig, camera);
-    }catch(Exception e){
-    	e.printStackTrace();
-    }
-    
-    timeInfo.setText("Time : " + manager.getTime());
-    scoreInfo.setText("Score : " + format.format(manager.getScore()));
+		if (mousePressed) {
+			float vx = map((float) mouseX - width / 2, -1 * width / 2,
+					width / 2, -0.01f, 0.01f);
+			float vy = map((float) mouseY - height / 2, -1 * height / 2,
+					height / 2, -0.01f, 0.01f);
+			camera.rotate(vx * viewerConfig.cameraV);
+			camera.angled(vy * viewerConfig.cameraV);
+		}
 
-    count++;
-    if (count >= (rate*updateRate)) {
-      manager.play();
-      count = 0;
-    }
-  }
-}
+		camera.camera(this);
 
+		// rotateZ((float)(Math.PI*2-camera.getRoll()));
 
-public void keyPressed() {
-  if (keyCode == UP) camera.angled(-0.01f*viewerConfig.cameraV);//camera.moveY(-10);
-  else if (keyCode == DOWN) camera.angled(0.01f*viewerConfig.cameraV);//camera.moveY(10);
-  else if (keyCode == LEFT) camera.rotate(0.01f*viewerConfig.cameraV);//moveX(-10);
-  else if (keyCode == RIGHT) camera.rotate(-0.01f*viewerConfig.cameraV);//moveX(10);
+		if (manager != null && manager.isInitialized()) {
+			ambientLight(255, 255, 255);
+			// directionalLight(255,255,255,0,0,-1);
+			try {
+				manager.drawShapes(count, rate * updateRate, viewerConfig,
+						camera);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 
-  else if(key == 'a') camera.moveX(-10*viewerConfig.cameraV);
-  else if(key == 'd') camera.moveX(10*viewerConfig.cameraV);
-  else if(key == 'w') camera.moveY(-10*viewerConfig.cameraV);
-  else if(key == 's') camera.moveY(10*viewerConfig.cameraV);
+			timeInfo.setText("Time : " + manager.getTime());
+			scoreInfo.setText("Score : " + format.format(manager.getScore()));
 
-  else if (keyCode == KeyEvent.VK_PAGE_DOWN ) camera.zoom(-10*viewerConfig.cameraV);
-  else if (keyCode == KeyEvent.VK_PAGE_UP ) camera.zoom(10*viewerConfig.cameraV);
-}
+			count++;
+			if (count >= (rate * updateRate)) {
+				manager.play();
+				count = 0;
+			}
+		}
+	}
 
-public void keyTyped(KeyEvent e) {
-  char key = Character.toLowerCase(e.getKeyChar());
-  
-  if (key == 'l') {
-    this.selectInput("Select a log File", "fileSelected");
-  } else if (key == 'e' || key == 'q') {
-    exit();
-  } else if (key == 'c') {
-    connect();
-  } else if (key == 'm') {
-	/*------------------------------------------------------------------------
-    if (this.frame.getMenuBar() != null) this.frame.remove(menu.getMenu());
-    else this.frame.setMenuBar(menu.getMenu());
-    --------------------------------------------------------------------------*/
-  } else if (key == 'p') {
-    if(preference){
-      preferenceFlag = isChamgeFlag(preferenceFlag);
-      showFrame(viewerConfig,preferenceff,300,550,preferenceFlag);
-    }
-  } else if (key == 'g') {
-    if (manager != null && manager.isInitialized())
-    {
-      if(preference){
-        graphFlag = isChamgeFlag(graphFlag);
-        showFrame(infoManager,graphff,500,1000,graphFlag);
-      }
-    }
-  } else if(key == 'v'){
-    if (manager != null && manager.isInitialized()){
-      //camera.isChangeView();
-    }
-  } else if (key == '2') {
-    viewerConfig.viewer2D();
-  } else if (key == '3') {
-    viewerConfig.viewer3D();
-  }
-}
+	public void keyPressed() {
+		if (keyCode == UP)
+			camera.angled(-0.01f * viewerConfig.cameraV);// camera.moveY(-10);
+		else if (keyCode == DOWN)
+			camera.angled(0.01f * viewerConfig.cameraV);// camera.moveY(10);
+		else if (keyCode == LEFT)
+			camera.rotate(0.01f * viewerConfig.cameraV);// moveX(-10);
+		else if (keyCode == RIGHT)
+			camera.rotate(-0.01f * viewerConfig.cameraV);// moveX(10);
 
-private void showFrame(PApplet applet,Frame ff,int w, int h, boolean flag)
-{
-   applet.init();
-   applet.size(w,h);
-   applet.start();
-   ff.setSize(w,h);
-   ff.setResizable(false);
-   ff.add(applet);
-   ff.addWindowListener(new FrameWindowListener());
-   ff.setVisible(flag);
-}
+		else if (key == 'a')
+			camera.moveX(-10 * viewerConfig.cameraV);
+		else if (key == 'd')
+			camera.moveX(10 * viewerConfig.cameraV);
+		else if (key == 'w')
+			camera.moveY(-10 * viewerConfig.cameraV);
+		else if (key == 's')
+			camera.moveY(10 * viewerConfig.cameraV);
 
-private void connect() {
-  String host = viewerConfig.host;//JOptionPane.showInputDialog(this, "input");
-  ViewerConnectionListener listener = new ViewerConnectionListener(scale, config, this,infoManager);
-  try {
-    listener.connect(host, viewerConfig.port);
-    listener.start();
-    this.manager = listener;
-  }
-  catch(ConnectionException ce) {
-    //JOptionPane.showMessageDialog(this, "invalid host");
-    listener.stop();
-  }
-  catch(IOException ie) {
-    //JOptionPane.showMessageDialog(this, "unknown host");
-    listener.stop();
-  }
-}
+		else if (keyCode == KeyEvent.VK_PAGE_DOWN)
+			camera.zoom(-10 * viewerConfig.cameraV);
+		else if (keyCode == KeyEvent.VK_PAGE_UP)
+			camera.zoom(10 * viewerConfig.cameraV);
+	}
 
-public void fileSelected(File selection)
-{
-  if (selection == null) {
-    println("Window was closed or the user hit cancel.");
-  } else {
-    LogFileReader log = new LogFileReader(scale, config, this, infoManager);
-    log.readFile(selection);
-    log.start();
-    manager = log;
-  }
-}
+	public void keyTyped(KeyEvent e) {
+		char key = Character.toLowerCase(e.getKeyChar());
 
-public boolean isChamgeFlag(boolean flag){
-  return !flag;
-  /*
-  if(flag == true){
-    return false;
-  }
-  else{
-    return true;
-  }
-  */
-}
+		if (key == 'l') {
+			this.selectInput("Select a log File", "fileSelected");
+		} else if (key == 'e' || key == 'q') {
+			exit();
+		} else if (key == 'c') {
+			connect();
+		} else if (key == 'm') {
+			/*------------------------------------------------------------------------
+			if (this.frame.getMenuBar() != null) this.frame.remove(menu.getMenu());
+			else this.frame.setMenuBar(menu.getMenu());
+			--------------------------------------------------------------------------*/
+		} else if (key == 'p') {
+			if (preference) {
+				preferenceFlag = isChamgeFlag(preferenceFlag);
+				showFrame(viewerConfig, preferenceff, 300, 550, preferenceFlag);
+			}
+		} else if (key == 'g') {
+			if (manager != null && manager.isInitialized()) {
+				if (preference) {
+					graphFlag = isChamgeFlag(graphFlag);
+					showFrame(infoManager, graphff, 500, 1000, graphFlag);
+				}
+			}
+		} else if (key == 'v') {
+			if (manager != null && manager.isInitialized()) {
+				// camera.isChangeView();
+			}
+		} else if (key == '2') {
+			viewerConfig.viewer2D();
+		} else if (key == '3') {
+			viewerConfig.viewer3D();
+		}
+	}
 
-public MenuListener getMenuListener() {
-	return new MenuListener();
-}
+	private void showFrame(PApplet applet, Frame ff, int w, int h, boolean flag) {
+		applet.init();
+		applet.size(w, h);
+		applet.start();
+		ff.setSize(w, h);
+		ff.setResizable(false);
+		ff.add(applet);
+		ff.addWindowListener(new FrameWindowListener());
+		ff.setVisible(flag);
+	}
 
+	private void connect() {
+		String host = viewerConfig.host;// JOptionPane.showInputDialog(this,
+										// "input");
+		ViewerConnectionListener listener = new ViewerConnectionListener(scale,
+				config, this, infoManager);
+		try {
+			listener.connect(host, viewerConfig.port);
+			listener.start();
+			this.manager = listener;
+		} catch (ConnectionException ce) {
+			// JOptionPane.showMessageDialog(this, "invalid host");
+			listener.stop();
+		} catch (IOException ie) {
+			// JOptionPane.showMessageDialog(this, "unknown host");
+			listener.stop();
+		}
+	}
 
-class MenuListener implements ActionListener
-{
-  public void actionPerformed(ActionEvent e)
-  {
-    String menu = e.getActionCommand();
-    if (menu.equals("Open LogFile")) {
-      selectInput("Select a log File", "fileSelected");
-    } else if (menu.equals("Connect Server")) {
-      connect();
-    } else if (menu.equals("Quit")) {
-      exit();
-    } else if (menu.equals("Preference")) {
-      if(preference){
-        preferenceFlag = isChamgeFlag(preferenceFlag);
-        showFrame(viewerConfig,preferenceff,300,550,preferenceFlag);
-        preference = false;
-      }
-    }
-  }
-}
+	public void fileSelected(File selection) {
+		if (selection == null) {
+			println("Window was closed or the user hit cancel.");
+		} else {
+			LogFileReader log = new LogFileReader(scale, config, this,
+					infoManager);
+			log.readFile(selection);
+			log.start();
+			manager = log;
+		}
+	}
 
-	class FrameWindowListener extends WindowAdapter{
-	  public void windowClosing(WindowEvent e)
-	  {
-	    e.getWindow().setVisible(false);
-	    preference = true;
-	  }
+	public boolean isChamgeFlag(boolean flag) {
+		return !flag;
+		/*
+		 * if(flag == true){ return false; } else{ return true; }
+		 */
+	}
+
+	public MenuListener getMenuListener() {
+		return new MenuListener();
+	}
+
+	class MenuListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			String menu = e.getActionCommand();
+			if (menu.equals("Open LogFile")) {
+				selectInput("Select a log File", "fileSelected");
+			} else if (menu.equals("Connect Server")) {
+				connect();
+			} else if (menu.equals("Quit")) {
+				exit();
+			} else if (menu.equals("Preference")) {
+				if (preference) {
+					preferenceFlag = isChamgeFlag(preferenceFlag);
+					showFrame(viewerConfig, preferenceff, 300, 550,
+							preferenceFlag);
+					preference = false;
+				}
+			}
+		}
+	}
+
+	class FrameWindowListener extends WindowAdapter {
+		public void windowClosing(WindowEvent e) {
+			e.getWindow().setVisible(false);
+			preference = true;
+		}
 	}
 }
-

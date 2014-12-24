@@ -5,20 +5,19 @@ import java.awt.MenuItem;
 import java.awt.PopupMenu;
 import java.awt.event.ActionListener;
 
-class MenuCreator{
+class MenuCreator {
 	private MenuBar menuBar;
-	  
-	public MenuCreator(String[] menu, ActionListener action)
-	{
+
+	public MenuCreator(String[] menu, ActionListener action) {
 		this.menuBar = new MenuBar();
-	  
-		for(int i = 0; i < menu.length; ++i){
+
+		for (int i = 0; i < menu.length; ++i) {
 			PopupMenu pop = new PopupMenu(menu[i]);
 			i++;
-			while(i < menu.length && !menu[i].equals("n")){
-				if(menu[i].equals("s")){
+			while (i < menu.length && !menu[i].equals("n")) {
+				if (menu[i].equals("s")) {
 					pop.addSeparator();
-				}else{
+				} else {
 					MenuItem item = new MenuItem(menu[i]);
 					item.addActionListener(action);
 					pop.add(item);
@@ -28,9 +27,8 @@ class MenuCreator{
 			menuBar.add(pop);
 		}
 	}
-	  
-	public MenuBar getMenu()
-	{
+
+	public MenuBar getMenu() {
 		return this.menuBar;
 	}
 }

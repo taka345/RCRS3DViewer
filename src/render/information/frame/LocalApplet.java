@@ -21,21 +21,22 @@ public abstract class LocalApplet extends PApplet {
 	public void start() {
 		try {
 			this.addNotify();
-		} catch(Exception e) {
+		} catch (Exception e) {
 
 		}
 	}
 
 	public void stop() {
 		try {
-			//this.destroy();
-			//this.remove(this);
+			// this.destroy();
+			// this.remove(this);
 			this.removeNotify();
-		} catch(Exception e) {
+		} catch (Exception e) {
 
 		}
 	}
 
 	abstract public void setup();
+
 	abstract public void draw();
 }
