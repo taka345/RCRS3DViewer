@@ -1,4 +1,4 @@
-package render.area.render;
+package render.area.draw;
 
 import loader.OBJLoader;
 import main.ViewerConfig;

@@ -8,7 +8,7 @@ import main.ViewerConfig;
 import processing.core.PApplet;
 import processing.core.PImage;
 import render.agent.EntityShape;
-import render.area.render.RoadRender;
+import render.area.draw.RoadRender;
 import render.effect.AreaEffect;
 import rescuecore2.misc.gui.ScreenTransform;
 import rescuecore2.standard.entities.Area;
@@ -59,8 +59,8 @@ public abstract class AreaShape implements EntityShape {
 		int i = 0;
 		for (Edge edge : area.getEdges()) {
 			this.passable[i / 2] = edge.isPassable();
-			nords[i] = transform.xToScreen(edge.getStartX());
-			nords[i + 1] = transform.yToScreen(edge.getStartY());
+			this.nords[i] = transform.xToScreen(edge.getStartX());
+			this.nords[i + 1] = transform.yToScreen(edge.getStartY());
 			i += 2;
 		}
 
@@ -68,14 +68,14 @@ public abstract class AreaShape implements EntityShape {
 
 		this.icon = null;
 		setIcon(entity, icons);
+		this.roadrender = new RoadRender();
 	}
 
 	public void drawShape(int count, int animationRate, PApplet applet,
 			ViewerConfig config) {
-		if (nords == null)
-			return;
+		if (nords == null) return;
 		// create Road
-		this.roadrender.drawRoad(applet, areaName, REFUGE, nords);
+		this.roadrender.drawRoad(applet, this.areaName, this.REFUGE, this.nords);
 
 		if (config.getFlag("Icon") && icon != null) {
 			AreaEffect.drawAreaIcon(applet, x, y, areaHeight, scale, icon,
@@ -136,3 +136,4 @@ public abstract class AreaShape implements EntityShape {
 		}
 	}
 }
+

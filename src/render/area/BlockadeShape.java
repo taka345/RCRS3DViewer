@@ -9,7 +9,7 @@ import loader.OBJLoader;
 import main.InformationManager;
 import main.ViewerConfig;
 import render.agent.EntityShape;
-import render.area.render.BlockadeRender;
+import render.area.draw.BlockadeRender;
 import render.effect.AreaEffect;
 import rescuecore2.misc.gui.ScreenTransform;
 import rescuecore2.worldmodel.Entity;

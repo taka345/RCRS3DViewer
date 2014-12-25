@@ -1,12 +1,55 @@
-package render.area.render;
+package render.area.draw;
 
 import main.ViewerConfig;
 import processing.core.PApplet;
 import processing.core.PImage;
+import render.effect.AreaEffect;
 
 public class BuildingRender {
-	public void BuildingRender() {
+	RoadRender roadrender;
 
+	public  BuildingRender() {
+		this.roadrender = new RoadRender();
+	}
+
+	public void drawBuilding(PApplet applet, float[] nords, float x, float y,
+			float areaHeight, boolean[] passable, float bHeight, int areaScale,
+			int scale, int areaName, int REFUGE, PImage icon, PImage[] img,
+			ViewerConfig config) {
+		applet.fill(50);
+		applet.stroke(200);
+		switch (config.getDetail()) {
+		case ViewerConfig.HIGH:
+			createBuilding(applet, nords, bHeight, scale, areaName, passable,
+					REFUGE, img, config);
+			
+			if(this.roadrender == null)
+				System.out.println("Null!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1");
+				this.roadrender.drawRoad(applet, areaName, REFUGE, nords);
+
+			if (config.getFlag("Icon") && icon != null) {
+				AreaEffect.drawAreaIcon(applet, x, y, areaHeight, areaScale,
+						icon, config);
+			}
+			break;
+		case ViewerConfig.LOW:
+			createBuilding(applet, nords, bHeight, scale, areaName, passable,
+					REFUGE, img, config);
+			this.roadrender.drawRoad(applet, areaName, REFUGE, nords);
+			if (config.getFlag("Icon") && icon != null) {
+				AreaEffect.drawAreaIcon(applet, x, y, areaHeight, areaScale,
+						icon, config);
+			}
+			break;
+		default:
+			// bottom
+			this.roadrender.drawRoad(applet, areaName, REFUGE, nords);
+			if (config.getFlag("Icon") && icon != null) {
+				AreaEffect.drawAreaIcon(applet, x, y, areaHeight, areaScale,
+						icon, config);
+			}
+			break;
+		}
 	}
 
 	public void createBuilding(PApplet applet, float[] nords, float bHeight,
