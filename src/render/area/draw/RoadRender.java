@@ -10,6 +10,7 @@ public class RoadRender {
 	public void drawRoad(PApplet applet, int areaName, int REFUGE, float[] nords) {
 		try {
 			applet.pushStyle();
+			
 			if (areaName == REFUGE) {
 				applet.ambient(125, 125, 125);
 				applet.stroke(100, 255, 100);
@@ -17,6 +18,7 @@ public class RoadRender {
 				applet.ambient(100, 100, 100);
 				applet.stroke(150);
 			}
+			
 			applet.pushMatrix();
 			applet.beginShape();
 			for (int i = 0; i < nords.length; i += 2) {
