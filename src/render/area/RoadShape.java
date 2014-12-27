@@ -17,8 +17,7 @@ public class RoadShape extends AreaShape {
 
 	public void drawShape(int count, int animationRate, PApplet applet,
 			ViewerConfig config) {
-		if (!config.getFlag("Road") || nords == null)
-			return;
+		if (!config.getFlag("Road") || nords == null) return;
 
 		/*----------------------------------------
 		 * draw Road

@@ -4,7 +4,8 @@ import main.InformationManager;
 import main.ViewerConfig;
 import processing.core.PApplet;
 import processing.core.PImage;
-import render.area.render.BuildingRender;
+import render.area.draw.BuildingRender;
+import render.area.draw.RoadRender;
 import render.effect.AreaEffect;
 import rescuecore2.misc.gui.ScreenTransform;
 import rescuecore2.standard.entities.Building;
@@ -30,6 +31,7 @@ public class BuildingShape extends AreaShape {
 	private int smoking;
 
 	private BuildingRender render;
+	private RoadRender roadrender;
 
 	public BuildingShape(Entity entity, ScreenTransform transform,
 			float bHeight, int scale, PImage[] image, PImage[] fireImage,
@@ -96,8 +98,7 @@ public class BuildingShape extends AreaShape {
 
 	public void drawShape(int count, int animationRate, PApplet applet,
 			ViewerConfig config) {
-		if (!config.getFlag("Building") || nords == null)
-			return;
+		if (!config.getFlag("Building") || nords == null) return;
 
 		switch (this.fieryness) {
 		case BURNING:
@@ -138,7 +139,7 @@ public class BuildingShape extends AreaShape {
 			break;
 		}
 
-		drawBuilding(applet, super.nords, super.x, super.y, super.areaHeight,
+		this.render.drawBuilding(applet, super.nords, super.x, super.y, super.areaHeight,
 				super.passable, this.bHeight, super.scale, this.scale,
 				this.areaName, super.REFUGE, super.icon, this.image, config);
 
@@ -194,42 +195,6 @@ public class BuildingShape extends AreaShape {
 			}
 			break;
 		default:
-			break;
-		}
-	}
-
-	public void drawBuilding(PApplet applet, float[] nords, float x, float y,
-			float areaHeight, boolean[] passable, float bHeight, int areaScale,
-			int scale, int areaName, int REFUGE, PImage icon, PImage[] img,
-			ViewerConfig config) {
-		applet.fill(50);
-		applet.stroke(200);
-		switch (config.getDetail()) {
-		case ViewerConfig.HIGH:
-			this.render.createBuilding(applet, nords, bHeight, scale, areaName,
-					passable, REFUGE, img, config);
-			super.roadrender.drawRoad(applet, areaName, REFUGE, nords);
-			if (config.getFlag("Icon") && icon != null) {
-				AreaEffect.drawAreaIcon(applet, x, y, areaHeight, areaScale,
-						icon, config);
-			}
-			break;
-		case ViewerConfig.LOW:
-			this.render.createBuilding(applet, nords, bHeight, scale, areaName,
-					passable, REFUGE, img, config);
-			super.roadrender.drawRoad(applet, areaName, REFUGE, nords);
-			if (config.getFlag("Icon") && icon != null) {
-				AreaEffect.drawAreaIcon(applet, x, y, areaHeight, areaScale,
-						icon, config);
-			}
-			break;
-		default:
-			// bottom
-			super.roadrender.drawRoad(applet, areaName, REFUGE, nords);
-			if (config.getFlag("Icon") && icon != null) {
-				AreaEffect.drawAreaIcon(applet, x, y, areaHeight, areaScale,
-						icon, config);
-			}
 			break;
 		}
 	}
